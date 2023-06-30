@@ -31,7 +31,7 @@ func main() {
 	}
 
 	pb.RegisterBoraServiceServer(server, &boraServer)
-	reflection.Register(server)
+	reflection.Register(server) // enabled for grpcurl
 
 	log.Printf("Starting gRPC server at: %s", address)
 	if err := server.Serve(listener); err != nil {
