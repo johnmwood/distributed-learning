@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package bora;
+
+option go_package = "github.com/johnmwood/distributed-learning/protos/bora";
+
+service BoraService {
+    rpc GetValue(KeyRequest) returns (ValueResponse) {}
+}
+
+message KeyRequest {
+    string key = 1;
+}
+
+message ValueResponse {
+    string value = 1;
+}
