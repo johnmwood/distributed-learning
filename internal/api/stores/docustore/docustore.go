@@ -66,7 +66,7 @@ func (d *DocuStore) loadLocalCache(dir string) {
 		if err := json.Unmarshal(data, &doc); err != nil {
 			log.Println("error unmarshaling json:", err)
 		}
-		if doc.id == "" {
+		if doc.ID == "" {
 			generateDocumentID(&doc, filepath)
 		}
 		d.addDocumentToCache(doc)
@@ -74,10 +74,10 @@ func (d *DocuStore) loadLocalCache(dir string) {
 }
 
 func (d *DocuStore) addDocumentToCache(doc Document) error {
-	if _, found := d.cache[doc.id]; found {
+	if _, found := d.cache[doc.ID]; found {
 		return errors.New("doc id already exists in cache")
 	}
-	d.cache[doc.id] = doc
+	d.cache[doc.ID] = doc
 
 	return nil
 }
@@ -88,7 +88,7 @@ func generateDocumentID(doc *Document, filepath string) {
 		log.Println("error generating new uuid:", err)
 		return
 	}
-	doc.id = uuid.String()
+	doc.ID = uuid.String()
 
 	updatedData, err := json.MarshalIndent(doc, "", "  ")
 	if err != nil {
