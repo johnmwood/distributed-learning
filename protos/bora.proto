@@ -6,6 +6,7 @@ option go_package = "github.com/johnmwood/distributed-learning/protos/bora";
 
 service BoraService {
     rpc GetValue(KeyRequest) returns (ValueResponse) {}
+    rpc GetDocument(DocumentRequest) returns (DocumentResponse) {}
 }
 
 message KeyRequest {
@@ -14,4 +15,12 @@ message KeyRequest {
 
 message ValueResponse {
     string value = 1;
+}
+
+message DocumentRequest {
+    string key = 1;
+}
+
+message DocumentResponse {
+    string data = 1;
 }

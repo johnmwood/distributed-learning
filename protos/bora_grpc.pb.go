@@ -19,7 +19,8 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	BoraService_GetValue_FullMethodName = "/bora.BoraService/GetValue"
+	BoraService_GetValue_FullMethodName    = "/bora.BoraService/GetValue"
+	BoraService_GetDocument_FullMethodName = "/bora.BoraService/GetDocument"
 )
 
 // BoraServiceClient is the client API for BoraService service.
@@ -27,6 +28,7 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type BoraServiceClient interface {
 	GetValue(ctx context.Context, in *KeyRequest, opts ...grpc.CallOption) (*ValueResponse, error)
+	GetDocument(ctx context.Context, in *DocumentRequest, opts ...grpc.CallOption) (*DocumentResponse, error)
 }
 
 type boraServiceClient struct {
@@ -46,11 +48,21 @@ func (c *boraServiceClient) GetValue(ctx context.Context, in *KeyRequest, opts .
 	return out, nil
 }
 
+func (c *boraServiceClient) GetDocument(ctx context.Context, in *DocumentRequest, opts ...grpc.CallOption) (*DocumentResponse, error) {
+	out := new(DocumentResponse)
+	err := c.cc.Invoke(ctx, BoraService_GetDocument_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // BoraServiceServer is the server API for BoraService service.
 // All implementations must embed UnimplementedBoraServiceServer
 // for forward compatibility
 type BoraServiceServer interface {
 	GetValue(context.Context, *KeyRequest) (*ValueResponse, error)
+	GetDocument(context.Context, *DocumentRequest) (*DocumentResponse, error)
 	mustEmbedUnimplementedBoraServiceServer()
 }
 
@@ -60,6 +72,9 @@ type UnimplementedBoraServiceServer struct {
 
 func (UnimplementedBoraServiceServer) GetValue(context.Context, *KeyRequest) (*ValueResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetValue not implemented")
+}
+func (UnimplementedBoraServiceServer) GetDocument(context.Context, *DocumentRequest) (*DocumentResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetDocument not implemented")
 }
 func (UnimplementedBoraServiceServer) mustEmbedUnimplementedBoraServiceServer() {}
 
@@ -92,6 +107,24 @@ func _BoraService_GetValue_Handler(srv interface{}, ctx context.Context, dec fun
 	return interceptor(ctx, in, info, handler)
 }
 
+func _BoraService_GetDocument_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DocumentRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(BoraServiceServer).GetDocument(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: BoraService_GetDocument_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(BoraServiceServer).GetDocument(ctx, req.(*DocumentRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // BoraService_ServiceDesc is the grpc.ServiceDesc for BoraService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -102,6 +135,10 @@ var BoraService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetValue",
 			Handler:    _BoraService_GetValue_Handler,
+		},
+		{
+			MethodName: "GetDocument",
+			Handler:    _BoraService_GetDocument_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
