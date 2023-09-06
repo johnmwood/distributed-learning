@@ -3,8 +3,10 @@ package docustore
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io/ioutil"
 	"log"
+	"os"
 	"path/filepath"
 
 	"github.com/google/uuid"
@@ -24,27 +26,37 @@ func (d *DocuStore) Create(data Document) error {
 }
 
 func (d *DocuStore) Read(key string) (Document, error) {
-	return Document{}, nil
+	if doc, found := d.cache[key]; found {
+		return doc, nil
+	}
+	return Document{}, &ErrDocumentNotFound{key}
 }
 
 func (d *DocuStore) Update(key string, data Document) error {
-	return nil
+	if _, found := d.cache[key]; found {
+		d.cache[key] = data
+	}
+	return &ErrDocumentNotFound{key}
 }
 
 func (d *DocuStore) Delete(key string) error {
-	return nil
+	if _, found := d.cache[key]; found {
+		delete(d.cache, key)
+	}
+	return &ErrDocumentNotFound{key}
 }
 
 func NewDocuStore() DocuStore {
 	store := DocuStore{
 		cache: make(map[string]Document),
 	}
-	store.loadLocalCache("internal/api/stores/docustore/examples")
+	store.loadLocalCache("../../../internal/api/stores/docustore/examples")
 	return store
 }
 
 // load local files into DocuStore from directory
 func (d *DocuStore) loadLocalCache(dir string) {
+	fmt.Println(os.Getwd())
 	files, err := ioutil.ReadDir(dir)
 	if err != nil {
 		log.Println("loadLocalCache failed with error:", err)
@@ -95,7 +107,6 @@ func generateDocumentID(doc *Document, filepath string) {
 		log.Println("error marshaling new uuid:", err)
 		return
 	}
-
 	err = ioutil.WriteFile(filepath, updatedData, 0644)
 	if err != nil {
 		log.Println("error writing new uuid back to json file:", err)

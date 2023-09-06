@@ -22,13 +22,7 @@ func main() {
 	}
 
 	server := grpc.NewServer()
-	boraServer := srv.Server{
-		Cache: map[string]string{
-			"something": "something",
-			"please":    "work",
-			"one":       "two",
-		},
-	}
+	boraServer := srv.Server{}
 
 	pb.RegisterBoraServiceServer(server, &boraServer)
 	reflection.Register(server) // enabled for grpcurl
